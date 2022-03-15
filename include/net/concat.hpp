@@ -1,0 +1,7 @@
+#ifndef NET_INCLUDE_NET_CONCAT_HPP_
+#define NET_INCLUDE_NET_CONCAT_HPP_
+
+#define NET_CONCAT_(x, y) x##y
+#define NET_CONCAT(x, y) NET_CONCAT_(x, y)
+
+#endif //NET_INCLUDE_NET_CONCAT_HPP_
