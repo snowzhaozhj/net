@@ -6,6 +6,7 @@ project(net
 set(CMAKE_CXX_STANDARD 17)
 
 add_subdirectory(third_party/spdlog)
+add_subdirectory(third_party/concurrentqueue)
 add_subdirectory(third_party/googletest)
 
 set(NET_INC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
@@ -24,6 +25,16 @@ target_sources(net
             "${NET_INC_DIR}/net/buffer.hpp"
             "${NET_INC_DIR}/net/inet_address.hpp"
             "${NET_INC_DIR}/net/socket.hpp"
+            "${NET_INC_DIR}/net/containers/mpmc_queue.hpp"
+            "${NET_INC_DIR}/net/util/chrono.hpp"
+            "${NET_INC_DIR}/net/reactor/channel.hpp"
+            "${NET_INC_DIR}/net/reactor/waker.hpp"
+            "${NET_INC_DIR}/net/reactor/timer_queue.hpp"
+            "${NET_INC_DIR}/net/reactor/poller.hpp"
+            "${NET_INC_DIR}/net/reactor/reactor.hpp"
+            "${NET_INC_DIR}/net/reactor/acceptor.hpp"
+            "${NET_INC_DIR}/net/reactor/connector.hpp"
+            "${NET_INC_DIR}/net/reactor/reactor_pool.hpp"
         PRIVATE
             "${NET_SRC_DIR}/net.cpp"
         )
@@ -31,7 +42,7 @@ target_include_directories(net
         PUBLIC
             "${NET_INC_DIR}"
         )
-target_link_libraries(net spdlog::spdlog)
+target_link_libraries(net spdlog::spdlog concurrentqueue)
 
 add_executable(net_test
         "${NET_TEST_DIR}/log_test.cpp"
