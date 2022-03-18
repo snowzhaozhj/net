@@ -1,8 +1,7 @@
 #ifndef NET_INCLUDE_NET_REACTOR_CHANNEL_HPP_
 #define NET_INCLUDE_NET_REACTOR_CHANNEL_HPP_
 
-#include "net/socket.hpp"
-
+#include <functional>
 #include <sys/epoll.h>
 
 namespace net {

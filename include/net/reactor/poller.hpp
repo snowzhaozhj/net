@@ -1,6 +1,7 @@
 #ifndef NET_INCLUDE_NET_REACTOR_POLLER_HPP_
 #define NET_INCLUDE_NET_REACTOR_POLLER_HPP_
 
+#include "net/socket.hpp"
 #include "net/reactor/channel.hpp"
 
 namespace net {
@@ -26,7 +27,7 @@ class Poller {
       : epoll_fd_(::epoll_create1(EPOLL_CLOEXEC)),
         event_vec_(kInitEventVecSize) {}
   ~Poller() {
-    ::close(epoll_fd_);
+    net::Close(epoll_fd_);
   }
 
   void Poll(int timeout_ms) {
