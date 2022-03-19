@@ -44,12 +44,32 @@ class InetAddress {
 
 using SA = struct sockaddr;
 
-SA *SACast(struct sockaddr_in *addr) {
+inline SA *SACast(struct sockaddr_in *addr) {
   return reinterpret_cast<SA *>(addr);
 }
 
-const SA *SACast(const struct sockaddr_in *addr) {
+inline const SA *SACast(const struct sockaddr_in *addr) {
   return reinterpret_cast<const SA *>(addr);
+}
+
+inline struct sockaddr_in GetLocalAddr(int fd) {
+  struct sockaddr_in local_addr{};
+  bzero(&local_addr, sizeof(local_addr));
+  socklen_t addr_len = sizeof(local_addr);
+  if (::getsockname(fd, SACast(&local_addr), &addr_len) < 0) {
+    LOG_ERROR("getsockname() failed");
+  }
+  return local_addr;
+}
+
+inline struct sockaddr_in GetPeerAddr(int fd) {
+  struct sockaddr_in peer_addr{};
+  bzero(&peer_addr, sizeof(peer_addr));
+  socklen_t addr_len = sizeof(peer_addr);
+  if (::getpeername(fd, SACast(&peer_addr), &addr_len) < 0) {
+    LOG_ERROR("getpeername() failed");
+  }
+  return peer_addr;
 }
 
 } // namespace net

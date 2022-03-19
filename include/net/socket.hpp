@@ -52,12 +52,9 @@ inline std::pair<int, InetAddress> NonBlockAccept(int fd) {
   return {conn_fd, InetAddress(peer_addr)};
 }
 
+/// 对connect()的封装，不处理错误，需要使用者根据返回值自己进行处理
 inline int Connect(int fd, const InetAddress &addr) {
-  int ret = connect(fd, SACast(&addr.GetAddr()), sizeof(struct sockaddr_in));
-  if (ret == -1) {
-    LOG_ERROR("connect() failed");
-  }
-  return ret;
+  return ::connect(fd, SACast(&addr.GetAddr()), sizeof(struct sockaddr_in));
 }
 
 inline ssize_t Read(int fd, const BufferPtr &buffer) {
@@ -98,6 +95,23 @@ inline void Close(int fd) {
   if (::close(fd) < 0) {
     LOG_ERROR("close() failed");
   }
+}
+
+inline int GetSocketError(int fd) {
+  int optval;
+  socklen_t optlen = sizeof(optval);
+  if (::getsockopt(fd, SOL_SOCKET, SO_ERROR, &optval, &optlen) < 0) {
+    return errno;
+  } else {
+    return optval;
+  }
+}
+
+inline bool IsSelfConnect(int fd) {
+  struct sockaddr_in local_addr = net::GetLocalAddr(fd);
+  struct sockaddr_in peer_addr = net::GetPeerAddr(fd);
+  return local_addr.sin_port == peer_addr.sin_port &&
+      local_addr.sin_addr.s_addr == peer_addr.sin_addr.s_addr;
 }
 
 inline int NewTcpSocketFd() {

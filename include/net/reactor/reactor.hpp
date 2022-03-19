@@ -43,6 +43,11 @@ class Reactor : noncopyable {
       poller_.Poll(poll_time);
       is_polling_ = false;
     }
+    // 处理任务队列中剩余的任务
+    Task task;
+    while (task_queue_.try_dequeue(task)) {
+      task();
+    }
   }
 
   void Stop() {

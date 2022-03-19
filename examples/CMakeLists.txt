@@ -2,3 +2,8 @@ add_executable(low_level_echo_server low_level/low_level_echo_server.cpp)
 target_link_libraries(low_level_echo_server net)
 add_executable(low_level_echo_client low_level/low_level_echo_client.cpp)
 target_link_libraries(low_level_echo_client net)
+
+add_executable(middle_level_echo_server middle_level/middle_level_echo_server.cpp)
+target_link_libraries(middle_level_echo_server net)
+add_executable(middle_level_echo_client middle_level/middle_level_echo_client.cpp)
+target_link_libraries(middle_level_echo_client net)
