@@ -65,28 +65,28 @@ class ObjectPool {
 namespace object_pool {
 
 template<typename T>
-ObjectPool<T> *GetTLSObjectPool() {
+inline ObjectPool<T> *GetTLSObjectPool() {
   thread_local static ObjectPool<T> object_pool_tls;
   return &object_pool_tls;
 }
 
 template<typename T>
-std::shared_ptr<T> NewShared() {
+inline std::shared_ptr<T> NewShared() {
   return GetTLSObjectPool<T>()->GetShared();
 }
 
 template<typename T>
-std::unique_ptr<T, std::function<void(T *)>> NewUnique() {
+inline std::unique_ptr<T, std::function<void(T *)>> NewUnique() {
   return GetTLSObjectPool<T>()->GetUnique();
 }
 
 template<typename T>
-T *New() {
+inline T *New() {
   return GetTLSObjectPool<T>()->Get();
 }
 
 template<typename T>
-void Delete(T *object) {
+inline void Delete(T *object) {
   GetTLSObjectPool<T>()->Add(object);
 }
 
