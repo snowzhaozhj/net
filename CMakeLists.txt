@@ -45,10 +45,18 @@ target_include_directories(net
 target_link_libraries(net spdlog::spdlog concurrentqueue)
 
 add_executable(net_test
+        "${NET_TEST_DIR}/net_test.cpp"
         "${NET_TEST_DIR}/log_test.cpp"
         "${NET_TEST_DIR}/buffer_test.cpp"
-        "${NET_TEST_DIR}/net_test.cpp"
+        "${NET_TEST_DIR}/defer_test.cpp"
+        "${NET_TEST_DIR}/reactor/channel_test.cpp"
+        "${NET_TEST_DIR}/reactor/poller_test.cpp"
+        "${NET_TEST_DIR}/reactor/reactor_test.cpp"
+        "${NET_TEST_DIR}/reactor/reactor_pool_test.cpp"
         )
+target_include_directories(net_test
+        PRIVATE
+            "${NET_TEST_DIR}")
 target_link_libraries(net_test net gtest)
 
 add_subdirectory(${NET_EXAMPLE_DIR})
