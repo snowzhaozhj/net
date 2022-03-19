@@ -7,11 +7,11 @@
 #include <cstdlib>
 #include <cassert>
 
-#ifndef DEBUG_ENABLED
-#define DEBUG_ENABLED 1
+#ifndef LOG_ENABLED
+#define LOG_ENABLED 1
 #endif
 
-#if DEBUG_ENABLED
+#if LOG_ENABLED
 
 #define LOG_DEBUG(...) SPDLOG_DEBUG(__VA_ARGS__)
 #define LOG_INFO(...) SPDLOG_INFO(__VA_ARGS__)
@@ -34,7 +34,7 @@ NET_INIT(log) {
 #define LOG_DEBUG(...)
 #define LOG_INFO(...)
 #define LOG_ERROR(...)
-#define LOG_FATAL(...)
+#define LOG_FATAL(...) abort()
 #defein NET_ASSERT(expr) assert(expr)
 
 #endif

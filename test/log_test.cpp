@@ -2,8 +2,6 @@
 
 #include "net_test.hpp"
 
-#if DEBUG_ENABLED
-
 class LogTest : public testing::Test {};
 
 void CallFatal() {
@@ -13,5 +11,3 @@ void CallFatal() {
 TEST_F(LogTest, Fatal) {
   EXPECT_DEATH(CallFatal(), "");
 }
-
-#endif
