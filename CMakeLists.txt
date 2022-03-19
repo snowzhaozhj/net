@@ -32,9 +32,9 @@ target_sources(net
             "${NET_INC_DIR}/net/reactor/timer_queue.hpp"
             "${NET_INC_DIR}/net/reactor/poller.hpp"
             "${NET_INC_DIR}/net/reactor/reactor.hpp"
+            "${NET_INC_DIR}/net/reactor/acceptor.hpp"
+            "${NET_INC_DIR}/net/reactor/connector.hpp"
             "${NET_INC_DIR}/net/reactor/reactor_pool.hpp"
-            "${NET_INC_DIR}/net/server/acceptor.hpp"
-            "${NET_INC_DIR}/net/client/connector.hpp"
         PRIVATE
             "${NET_SRC_DIR}/net.cpp"
         )
