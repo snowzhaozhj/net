@@ -30,7 +30,6 @@ class Reactor : noncopyable {
     poller_.UpdateChannel(waker_.GetChannel());
   }
   ~Reactor() {
-    NET_ASSERT(stopped_ == true);
     reactor_tls = nullptr;
   }
 

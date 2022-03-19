@@ -8,7 +8,7 @@ namespace net {
 using TimePoint = std::chrono::system_clock::time_point;
 using Duration = std::chrono::system_clock::duration;
 
-TimePoint GetNow() {
+inline TimePoint GetNow() {
   return std::chrono::system_clock::now();
 }
 
