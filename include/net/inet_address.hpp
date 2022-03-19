@@ -31,7 +31,7 @@ class InetAddress {
 
   [[nodiscard]] const sockaddr_in &GetAddr() const { return addr_; }
 
-  std::string ToString() {
+  [[nodiscard]] std::string ToString() const {
     char host[INET_ADDRSTRLEN] = "INVALID";
     ::inet_ntop(AF_INET, &addr_.sin_addr, host, sizeof(host));
     uint16_t port = ntohs(addr_.sin_port);
