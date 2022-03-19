@@ -7,11 +7,9 @@ namespace net {
 
 class ReactorPool : noncopyable {
  public:
-  ReactorPool() : thread_num_(1), next_(0) {}
-  ~ReactorPool() {
-    for (auto &thread: thread_vec_) {
-      thread.join();
-    }
+  explicit ReactorPool(int thread_num = 1)
+      : thread_num_(thread_num),
+        next_(0) {
   }
 
   /// 设置ReactorPool内部的线程数，请确保thread_num > 0
@@ -20,7 +18,7 @@ class ReactorPool : noncopyable {
     thread_num_ = thread_num;
   }
 
-  /// @note 只能调用1次
+  /// @note 非线程安全
   void Start() {
     thread_vec_.reserve(thread_num_);
     reactor_vec_.reserve(thread_num_);
@@ -30,6 +28,18 @@ class ReactorPool : noncopyable {
         reactor_vec_.push_back(&reactor);
         reactor.Run();
       });
+    }
+    while (reactor_vec_.size() < thread_num_);  // 通过自旋，等待所有Reactor构造完成
+  }
+
+  /// 向ReactorPool中的所有Reactor提交一个Stop任务，并等待所有线程结束
+  /// @note 线程安全
+  void Stop() {
+    for (auto reactor: reactor_vec_) {
+      reactor->SubmitTask([reactor] { reactor->Stop(); });
+    }
+    for (auto &thread: thread_vec_) {
+      thread.join();
     }
   }
 
