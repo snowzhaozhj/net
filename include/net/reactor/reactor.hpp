@@ -91,6 +91,10 @@ class Reactor : noncopyable {
     poller_.RemoveChannel(channel);
   }
 
+  /// @return 如果是在当前Reactor绑定的thread中则返回true，否则返回false
+  [[nodiscard]] bool InCurrentReactorThread() const {
+    return std::this_thread::get_id() == thread_id_;
+  }
  private:
   /// @return 如果是在处理了kMaxTaskOnce个任务量之后退出的则返回true，否则返回false
   bool HandleTasks() {
@@ -101,10 +105,6 @@ class Reactor : noncopyable {
       if (++num > kMaxTaskOnce) return true;
     }
     return false;
-  }
-  /// @return 如果是在当前Reactor绑定的thread中则返回true，否则返回false
-  [[nodiscard]] bool InCurrentReactorThread() const {
-    return std::this_thread::get_id() == thread_id_;
   }
 
   containers::MPMCQueue<Task> task_queue_;  // TODO: 使用MPSC队列性能可能会更好
