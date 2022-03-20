@@ -121,9 +121,7 @@ class Connector : noncopyable {
 
   void HandleWrite() {
     NET_ASSERT(state_ == State::Connecting);
-    int fd = channel_->GetFd();
-    reactor_->RemoveChannel(channel_.get());
-    channel_ = nullptr;
+    int fd = ResetAndRemoveChannel();
     int err = net::GetSocketError(fd);
     if (err) {
       LOG_ERROR("GetSocketError {}", strerror(err));
@@ -139,10 +137,16 @@ class Connector : noncopyable {
   void HandleError() {
     LOG_ERROR("Connector GetError");
     NET_ASSERT(state_ == State::Connecting);
-    int fd = channel_->GetFd();
-    reactor_->RemoveChannel(channel_.get());
-    channel_ = nullptr;
+    int fd = ResetAndRemoveChannel();
     Retry(fd);
+  }
+
+  int ResetAndRemoveChannel() {
+    int fd = channel_->GetFd();
+    channel_->DisableAll();
+    reactor_->RemoveChannel(channel_.get());
+    channel_.reset();
+    return fd;
   }
 
   enum class State {
