@@ -77,12 +77,16 @@ inline ssize_t Read(int fd, const BufferPtr &buffer) {
   return n;
 }
 
-inline ssize_t Write(int fd, const BufferPtr &buffer) {
-  ssize_t n = ::write(fd, buffer->GetReadPtr(), buffer->ReadableBytes());
+inline ssize_t Write(int fd, const char *data, size_t len) {
+  ssize_t n = ::write(fd, data, len);
   if (n < 0) {
     LOG_ERROR("write() failed");
   }
   return n;
+}
+
+inline ssize_t Write(int fd, const BufferPtr &buffer) {
+  return net::Write(fd, buffer->GetReadPtr(), buffer->ReadableBytes());
 }
 
 inline void ShutDown(int fd, int how) {

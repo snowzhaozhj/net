@@ -37,6 +37,9 @@ target_sources(net
             "${NET_INC_DIR}/net/reactor/acceptor.hpp"
             "${NET_INC_DIR}/net/reactor/connector.hpp"
             "${NET_INC_DIR}/net/reactor/reactor_pool.hpp"
+            "${NET_INC_DIR}/net/tcp/tcp_connection.hpp"
+            "${NET_INC_DIR}/net/tcp/tcp_server.hpp"
+            "${NET_INC_DIR}/net/tcp/tcp_client.hpp"
         PRIVATE
             "${NET_SRC_DIR}/net.cpp"
         )

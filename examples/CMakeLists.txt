@@ -7,3 +7,6 @@ add_executable(middle_level_echo_server middle_level/middle_level_echo_server.cp
 target_link_libraries(middle_level_echo_server net)
 add_executable(middle_level_echo_client middle_level/middle_level_echo_client.cpp)
 target_link_libraries(middle_level_echo_client net)
+
+add_executable(high_level_echo_server high_level/high_level_echo_server.cpp)
+target_link_libraries(high_level_echo_server net)

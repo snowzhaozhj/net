@@ -27,6 +27,7 @@ class Channel {
   void DisableWrite() { events_ &= ~kWriteEvent; }
   void DisableAll() { events_ = kNoneEvent; }
 
+  [[nodiscard]] bool WriteEnabled() const { return events_ & kWriteEvent; }
   [[nodiscard]] int GetEvents() const { return events_; }
   [[nodiscard]] bool IsNoneEvent() const { return events_ == kNoneEvent; }
   void SetREvents(int revents) { revents_ = revents; }

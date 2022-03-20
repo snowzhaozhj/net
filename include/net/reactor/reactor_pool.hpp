@@ -45,12 +45,6 @@ class ReactorPool : noncopyable {
     }
   }
 
-  /// 向ReactorPool提交任务, 将会采用RoundRobin算法来给内部的Reactor分配任务
-  /// @note 非线程安全
-  bool SubmitTask(Reactor::Task &&task) {
-    return GetNextReactor()->SubmitTask(std::move(task));
-  }
- private:
   /// 使用RoundRobin算法获取下一个Reactor
   /// @note 非线程安全
   Reactor *GetNextReactor() {
@@ -59,6 +53,13 @@ class ReactorPool : noncopyable {
     return reactor;
   }
 
+  /// 向ReactorPool提交任务, 将会采用RoundRobin算法来给内部的Reactor分配任务
+  /// @note 非线程安全
+  bool SubmitTask(Reactor::Task &&task) {
+    return GetNextReactor()->SubmitTask(std::move(task));
+  }
+
+ private:
   std::vector<std::thread> thread_vec_;
   std::vector<Reactor *> reactor_vec_;
   int thread_num_;
