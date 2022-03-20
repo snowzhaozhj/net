@@ -18,18 +18,20 @@ class ReactorPool : noncopyable {
     thread_num_ = thread_num;
   }
 
-  /// @note 非线程安全
+  /// 启动ReactorPool
   void Start() {
     thread_vec_.reserve(thread_num_);
-    reactor_vec_.reserve(thread_num_);
+    reactor_vec_.resize(thread_num_);
+    std::atomic<int> wait_group{thread_num_};
     for (int i = 0; i < thread_num_; ++i) {
-      thread_vec_.emplace_back([this] {
+      thread_vec_.emplace_back([this, &wait_group, i] {
         Reactor reactor;
-        reactor_vec_.push_back(&reactor);
+        reactor_vec_[i] = &reactor;
+        --wait_group;
         reactor.Run();
       });
     }
-    while (reactor_vec_.size() < thread_num_);  // 通过自旋，等待所有Reactor构造完成
+    while (wait_group > 0); // 通过自旋等待Reactor构造完成
   }
 
   /// 向ReactorPool中的所有Reactor提交一个Stop任务，并等待所有线程结束
