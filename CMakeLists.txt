@@ -44,6 +44,7 @@ target_sources(net
             "${NET_INC_DIR}/net/http/http_request.hpp"
             "${NET_INC_DIR}/net/http/http_reply.hpp"
             "${NET_INC_DIR}/net/http/http_parser.hpp"
+            "${NET_INC_DIR}/net/http/http_route.hpp"
             "${NET_INC_DIR}/net/http/http_server.hpp"
         PRIVATE
             "${NET_SRC_DIR}/net.cpp"

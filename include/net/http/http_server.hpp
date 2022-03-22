@@ -3,12 +3,13 @@
 
 #include "net/tcp/tcp_server.hpp"
 #include "net/http/http_parser.hpp"
+#include "net/http/http_route.hpp"
 
 namespace net {
 
 class HttpServer {
  public:
-  using HandleFunction = std::function<void(const HttpRequest &, HttpReply &)>;
+  using HandleFunction = HttpRoute::HandleFunction;
 
   HttpServer(Reactor *reactor, const InetAddress &listen_addr)
       : tcp_server_(reactor, listen_addr) {
@@ -22,8 +23,8 @@ class HttpServer {
     tcp_server_.SetThreadNum(thread_num);
   }
 
-  void SetHandleFunction(const HandleFunction &handle_function) {
-    handle_function_ = handle_function;
+  void Handle(const std::string &path, const HandleFunction &handle_function) {
+    route_.RegisterHandler(path, handle_function);
   }
 
   void Start() {
@@ -36,11 +37,12 @@ class HttpServer {
     HttpReply reply;
     reply.SetVersion(HttpVersion::Http11);
     if (net::Parse(buffer, request)) {
-      if (handle_function_) {
+      auto handler = route_.GetHandler(request.GetRouteUrl());
+      if (handler) {
         reply.SetStatusCode(HttpStatusCode::k200Ok);  // 默认返回200 OK
-        handle_function_(request, reply);
+        (*handler)(request, reply);
       } else {
-        reply.SetStatusCode(HttpStatusCode::k501NotImplemented);
+        reply.SetStatusCode(HttpStatusCode::k404NotFound);
       }
     } else {
       reply.SetStatusCode(HttpStatusCode::k400BadRequest);
@@ -49,7 +51,7 @@ class HttpServer {
   }
 
   TcpServer tcp_server_;
-  HandleFunction handle_function_;  // TODO: 添加路由
+  HttpRoute route_;
 };
 
 } // namespace net

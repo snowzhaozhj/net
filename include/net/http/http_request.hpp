@@ -20,6 +20,11 @@ class HttpRequest {
   [[nodiscard]] const std::string &GetUrl() const { return url_; }
   void SetUrl(const std::string &url) { url_ = url; }
 
+  [[nodiscard]] std::string GetRouteUrl() const {
+    auto pos = url_.find('?');
+    return (pos == std::string::npos) ? url_ : url_.substr(0, pos);
+  }
+
   [[nodiscard]] HttpVersion GetVersion() const { return version_; }
   void SetVersion(HttpVersion version) { version_ = version; }
 
