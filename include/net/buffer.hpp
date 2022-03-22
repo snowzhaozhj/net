@@ -64,6 +64,11 @@ class Buffer : public noncopyable {
     const char *pos = std::find(GetReadPtr(), GetWritePtr(), ch);
     return pos == GetWritePtr() ? nullptr : pos;
   }
+  [[nodiscard]] const char *FindIf(std::function<bool(char)> &&pred) const {
+    // 使用std::find而不是memchr
+    const char *pos = std::find_if(GetReadPtr(), GetWritePtr(), std::move(pred));
+    return pos == GetWritePtr() ? nullptr : pos;
+  }
   [[nodiscard]] const char *Search(const char *ptr, size_t len) const {
     const char *pos = std::search(GetReadPtr(), GetWritePtr(),
                                   ptr, ptr + len);
