@@ -88,10 +88,10 @@ class TcpConnection : noncopyable, public std::enable_shared_from_this<TcpConnec
   void Destroy() {
     state_.store(State::Disconnected, std::memory_order_release);
     channel_.DisableAll();
-    reactor_->RemoveChannel(&channel_);
     if (connection_callback_) {
       connection_callback_(shared_from_this());
     }
+    reactor_->RemoveChannel(&channel_);
   }
 
   /// 向对端发送数据
@@ -125,6 +125,8 @@ class TcpConnection : noncopyable, public std::enable_shared_from_this<TcpConnec
       reactor_->SubmitTask([this] { RealShutdown(); });
     }
   }
+
+  Reactor *GetReactor() const { return reactor_; }
 
  private:
   void HandleRead() {

@@ -10,6 +10,7 @@ namespace detail {
 
 inline void EpollCtl(int epfd, int op, Channel *channel) {
   struct epoll_event event{};
+  bzero(&event, sizeof(event));
   event.events = channel->GetEvents();
   event.data.ptr = channel;
   if (::epoll_ctl(epfd, op, channel->GetFd(), &event) < 0) {
@@ -58,8 +59,10 @@ class Poller {
     }
   }
   void RemoveChannel(Channel *channel) const {
-    detail::EpollCtl(epoll_fd_, EPOLL_CTL_DEL, channel);
-    channel->SetState(Channel::State::Add);
+    if (channel->GetState() == Channel::State::Mod) {
+      detail::EpollCtl(epoll_fd_, EPOLL_CTL_DEL, channel);
+      channel->SetState(Channel::State::Add);
+    }
   }
  private:
   int epoll_fd_;

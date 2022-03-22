@@ -6,6 +6,8 @@
 #include "net/tcp/tcp_connection.hpp"
 #include "net/util/object_pool.hpp"
 
+#include <unordered_set>
+
 namespace net {
 
 class TcpServer : noncopyable {
@@ -52,10 +54,10 @@ class TcpServer : noncopyable {
     connection->SetConnectionCallback(connection_callback_);
     connection->SetMessageCallback(message_callback_);
     connection->SetWriteCompleteCallback(write_complete_callback_);
-    connection->SetCloseCallback([this](const TcpConnectionPtr &conn) {
-      main_reactor_->SubmitTask([this, conn] {
-        active_connection_set_.erase(conn); // 删除之后，TcpConnection将会自动回到对象池中
-        conn->Destroy();
+    connection->SetCloseCallback([this, sub_reactor](const TcpConnectionPtr &conn) {
+      main_reactor_->SubmitTask([this, conn, sub_reactor] {
+        sub_reactor->SubmitTask([conn] { conn->Destroy(); });
+        active_connection_set_.erase(conn);
       });
     });
     sub_reactor->SubmitTask([connection] { connection->Establish(); });
@@ -65,7 +67,7 @@ class TcpServer : noncopyable {
   Acceptor acceptor_;
   ReactorPool sub_reactor_pool_;
   ObjectPool<TcpConnection> connection_pool_;
-  std::set<TcpConnectionPtr> active_connection_set_;
+  std::unordered_set<TcpConnectionPtr> active_connection_set_;
 
   ConnectionCallback connection_callback_;
   MessageCallback message_callback_;
