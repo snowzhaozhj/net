@@ -40,6 +40,11 @@ target_sources(net
             "${NET_INC_DIR}/net/tcp/tcp_connection.hpp"
             "${NET_INC_DIR}/net/tcp/tcp_server.hpp"
             "${NET_INC_DIR}/net/tcp/tcp_client.hpp"
+            "${NET_INC_DIR}/net/http/common.hpp"
+            "${NET_INC_DIR}/net/http/http_request.hpp"
+            "${NET_INC_DIR}/net/http/http_reply.hpp"
+            "${NET_INC_DIR}/net/http/http_parser.hpp"
+            "${NET_INC_DIR}/net/http/http_server.hpp"
         PRIVATE
             "${NET_SRC_DIR}/net.cpp"
         )

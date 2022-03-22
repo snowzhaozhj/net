@@ -12,3 +12,6 @@ add_executable(high_level_echo_server high_level/high_level_echo_server.cpp)
 target_link_libraries(high_level_echo_server net)
 add_executable(high_level_echo_client high_level/high_level_echo_client.cpp)
 target_link_libraries(high_level_echo_client net)
+
+add_executable(http_server http/http_server.cpp)
+target_link_libraries(http_server net)
