@@ -10,8 +10,8 @@ namespace net {
 /// 非线程安全
 template<typename T>
 class ObjectPool {
-  static constexpr int kInitPoolSize = 100;
-  static constexpr int kOnceExtendSize = 10;
+  static constexpr int kInitPoolSize = 1024;
+  static constexpr int kOnceExtendSize = 1024;
  public:
   explicit ObjectPool(int size = kInitPoolSize) {
     object_vec_.reserve(size);
