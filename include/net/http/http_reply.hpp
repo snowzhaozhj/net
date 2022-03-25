@@ -37,6 +37,7 @@ class HttpReply {
   void SetContent(const std::string &content) { content_ = content; }
 
   std::string SerializedToString() {
+    AddConnectionField();
     AddContentLengthField();
     std::string str;
     str.append(net::ToString(version_));
@@ -57,6 +58,7 @@ class HttpReply {
   }
 
   void SerializedToString(const BufferPtr &buffer) {
+    AddConnectionField();
     AddContentLengthField();
     buffer->Append(net::ToString(version_));
     buffer->Append(" ");
@@ -76,7 +78,13 @@ class HttpReply {
 
  private:
   void AddContentLengthField() {
-    headers_["Content-Length"] = fmt::format("{}", content_.size());
+    headers_[kContentLengthField] = std::to_string(content_.size());
+  }
+
+  void AddConnectionField() {
+    if (!headers_[kConnectionField].empty()) {
+      headers_[kConnectionField] = kConnectionKeepAlive;
+    }
   }
 
   HttpVersion version_;

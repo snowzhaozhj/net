@@ -66,6 +66,7 @@ add_executable(net_test
         "${NET_TEST_DIR}/reactor/poller_test.cpp"
         "${NET_TEST_DIR}/reactor/reactor_test.cpp"
         "${NET_TEST_DIR}/reactor/reactor_pool_test.cpp"
+        "${NET_TEST_DIR}/http/http_parser_test.cpp"
         )
 target_include_directories(net_test
         PRIVATE

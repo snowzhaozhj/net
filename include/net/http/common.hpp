@@ -10,6 +10,11 @@ namespace net {
 inline constexpr char kCRLF[] = "\r\n";
 inline constexpr int kCRLFSize = 2;
 
+inline constexpr char kContentLengthField[] = "Content-Length";
+inline constexpr char kConnectionField[] = "Connection";
+inline constexpr char kConnectionClose[] = "Close";
+inline constexpr char kConnectionKeepAlive[] = "Keep-Alive";
+
 enum class HttpVersion {
   Invalid,
   Http10,

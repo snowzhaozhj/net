@@ -48,6 +48,9 @@ class HttpServer {
       reply.SetStatusCode(HttpStatusCode::k400BadRequest);
     }
     conn->Send(reply.SerializedToString());
+    if (reply.GetHeader(kConnectionField) == kConnectionClose) {
+      conn->Shutdown();
+    }
   }
 
   TcpServer tcp_server_;
