@@ -60,13 +60,13 @@ enum class HttpStatusCode {
 
 namespace detail {
 
-const std::unordered_map<HttpVersion, std::string> http_version_to_string = {
+inline const std::unordered_map<HttpVersion, std::string> http_version_to_string = {
     {HttpVersion::Invalid, "INVALID"},
     {HttpVersion::Http10, "HTTP/1.0"},
     {HttpVersion::Http11, "HTTP/1.1"},
 };
 
-const std::unordered_map<HttpMethod, std::string> http_method_to_string = {
+inline const std::unordered_map<HttpMethod, std::string> http_method_to_string = {
     {HttpMethod::Invalid, "INVALID"},
     {HttpMethod::Get, "GET"},
     {HttpMethod::Head, "HEAD"},
@@ -79,7 +79,7 @@ const std::unordered_map<HttpMethod, std::string> http_method_to_string = {
     {HttpMethod::Patch, "PATCH"},
 };
 
-const std::unordered_map<HttpStatusCode, std::string> http_status_code_to_message = {
+inline const std::unordered_map<HttpStatusCode, std::string> http_status_code_to_message = {
     {HttpStatusCode::kUnknown, "Unknown"},
     {HttpStatusCode::k200Ok, "OK"},
     {HttpStatusCode::k201Created, "Created"},
