@@ -7,7 +7,18 @@
 namespace net {
 
 // 非常简陋的实现，只支持绝对匹配
-// TODO: 支持前缀匹配
+// TODO: 支持对结尾'/'的处理
+// TODO: 采用RadixTree
+
+namespace detail {
+
+bool HasPrefix(std::string_view s, std::string_view prefix) {
+  if (prefix.size() > s.size()) return false;
+  return std::equal(prefix.begin(), prefix.end(),
+                    s.begin());
+}
+
+} // namespace detail
 
 class HttpRoute {
  public:
@@ -23,6 +34,11 @@ class HttpRoute {
     auto pos = path_to_handle_function_.find(path);
     if (pos != path_to_handle_function_.end()) {
       return &(pos->second);
+    }
+    for (auto &[p, h]: path_to_handle_function_) {
+      if (detail::HasPrefix(path, p)) {
+        return &h;
+      }
     }
     return nullptr;
   }

@@ -11,9 +11,12 @@ inline constexpr char kCRLF[] = "\r\n";
 inline constexpr int kCRLFSize = 2;
 
 inline constexpr char kContentLengthField[] = "Content-Length";
+inline constexpr char kContentTypeField[] = "Content-Type";
 inline constexpr char kConnectionField[] = "Connection";
 inline constexpr char kConnectionClose[] = "Close";
 inline constexpr char kConnectionKeepAlive[] = "Keep-Alive";
+
+inline constexpr std::string_view kIndexFile = "index.html";
 
 enum class HttpVersion {
   Invalid,

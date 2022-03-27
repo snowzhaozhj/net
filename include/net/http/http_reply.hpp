@@ -33,6 +33,10 @@ class HttpReply {
     headers_[key] = value;
   }
 
+  void SetContentType(std::string_view content_type) {
+    headers_[kContentTypeField] = content_type;
+  }
+
   [[nodiscard]] const std::string &GetContent() const { return content_; }
   void SetContent(const std::string &content) { content_ = content; }
 

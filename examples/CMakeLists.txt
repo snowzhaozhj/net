@@ -15,3 +15,5 @@ target_link_libraries(high_level_echo_client net)
 
 add_executable(http_server http/http_server.cpp)
 target_link_libraries(http_server net)
+add_executable(http_static_server http/http_static_server.cpp)
+target_link_libraries(http_static_server net)
