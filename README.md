@@ -41,6 +41,7 @@ net的最终性能差不多是miniMuduo的两倍，与asio的性能不相上下�
 - [ ] HighPerformanceHttpRoute
 - [ ] Cookie
 - [x] HttpFileServer
+- [x] RestfulAPI
 - [ ] HttpsServer
 - [ ] FtpServer
 - [ ] RpcServer
