@@ -48,6 +48,7 @@ target_sources(net
             "${NET_INC_DIR}/net/http/http_parser.hpp"
             "${NET_INC_DIR}/net/http/http_route.hpp"
             "${NET_INC_DIR}/net/http/http_file_server.hpp"
+            "${NET_INC_DIR}/net/http/restful_handler.hpp"
             "${NET_INC_DIR}/net/http/http_server.hpp"
         PRIVATE
             "${NET_SRC_DIR}/net.cpp"
