@@ -10,6 +10,7 @@ namespace net {
 inline constexpr char kCRLF[] = "\r\n";
 inline constexpr int kCRLFSize = 2;
 
+inline constexpr char kLocationField[] = "Location";
 inline constexpr char kContentLengthField[] = "Content-Length";
 inline constexpr char kContentTypeField[] = "Content-Type";
 inline constexpr char kConnectionField[] = "Connection";

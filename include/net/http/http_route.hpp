@@ -7,7 +7,6 @@
 namespace net {
 
 // 非常简陋的实现，只支持绝对匹配
-// TODO: 支持对结尾'/'的处理
 // TODO: 采用RadixTree
 
 namespace detail {
@@ -37,6 +36,8 @@ class HttpRoute {
     }
     for (auto &[p, h]: path_to_handle_function_) {
       if (detail::HasPrefix(path, p)) {
+        return &h;
+      } else if (detail::HasPrefix(path + '/',p)) {
         return &h;
       }
     }

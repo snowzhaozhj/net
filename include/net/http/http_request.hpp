@@ -22,7 +22,12 @@ class HttpRequest {
 
   [[nodiscard]] std::string GetRouteUrl() const {
     auto pos = url_.find('?');
-    return (pos == std::string::npos) ? url_ : url_.substr(0, pos);
+    return url_.substr(0, pos);
+  }
+
+  [[nodiscard]] std::string GetRawParams() const {
+    auto pos = url_.find('?');
+    return pos == std::string::npos ? "" : url_.substr(pos + 1);
   }
 
   [[nodiscard]] HttpVersion GetVersion() const { return version_; }

@@ -11,7 +11,6 @@
 #include <sstream>
 
 // TODO: 支持Content-Range字段
-// TODO: 对于目录后没有'/'的需要重定向的带'/'的页面
 
 namespace net {
 
@@ -35,14 +34,19 @@ class HttpFileServer {
       : base_dir_(std::move(base_dir)),
         url_prefix_(std::move(url_prefix)) {
     NET_ASSERT(fs::is_directory(base_dir_));
+    if (url_prefix_.empty() || url_prefix_.back() != '/') {
+      url_prefix_.push_back('/');
+    }
   }
 
   void operator()(const HttpRequest &request, HttpReply &reply) {
     std::string url = request.GetRouteUrl();
     std::string rel_path;
     if (!detail::RemovePrefix(rel_path, url, url_prefix_)) {
-      reply.SetStatusCode(HttpStatusCode::k404NotFound);
-      return;
+      if (!detail::RemovePrefix(rel_path, url + '/', url_prefix_)) {
+        reply.SetStatusCode(HttpStatusCode::k404NotFound);
+        return;
+      }
     }
     auto file_path = base_dir_ / rel_path;  // 拼接出在文件系统中的路径
     if (!fs::exists(file_path)) {
@@ -50,6 +54,11 @@ class HttpFileServer {
       return;
     }
     if (fs::is_directory(file_path)) {
+      // 如果目录路径不以'/'结束的话，需要重定向到包含'/'的页面
+      if (url.empty() || url.back() != '/') {
+        LocalRedirect(url + '/', request.GetRawParams(), reply);
+        return;
+      }
       // 对于目录，首先查找目录下是否有index.html文件
       auto index_file = file_path / kIndexFile;
       if (fs::exists(index_file)) {
@@ -89,6 +98,16 @@ class HttpFileServer {
     content.append("</pre>");
     reply.SetContentType("text/html; charset=utf-8");
     reply.SetContent(content);
+  }
+
+  void LocalRedirect(std::string_view new_path, std::string_view params, HttpReply &reply) {
+    std::string p(new_path);
+    if (!params.empty()) {
+      p.push_back('?');
+      p += params;
+    }
+    reply.SetHeader(kLocationField, p);
+    reply.SetStatusCode(HttpStatusCode::k301MovedPermanently);
   }
 
   fs::path base_dir_;
