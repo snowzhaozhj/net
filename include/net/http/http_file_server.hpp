@@ -5,6 +5,7 @@
 #include "net/http/http_request.hpp"
 #include "net/http/http_reply.hpp"
 #include "net/http/mime_types.hpp"
+#include "net/util/string.hpp"
 
 #include <filesystem>
 #include <fstream>
@@ -15,18 +16,6 @@
 namespace net {
 
 namespace fs = std::filesystem;
-
-namespace detail {
-
-bool RemovePrefix(std::string &result, const std::string &path, std::string_view prefix) {
-  if (prefix.size() > path.size()) return false;
-  auto has_prefix = std::equal(prefix.begin(), prefix.end(),
-                               path.begin());
-  result = path.substr(prefix.size());
-  return true;
-}
-
-};  // namespace net::detail
 
 class HttpFileServer {
  public:
@@ -42,11 +31,10 @@ class HttpFileServer {
   void operator()(const HttpRequest &request, HttpReply &reply) {
     std::string url = request.GetRouteUrl();
     std::string rel_path;
-    if (!detail::RemovePrefix(rel_path, url, url_prefix_)) {
-      if (!detail::RemovePrefix(rel_path, url + '/', url_prefix_)) {
-        reply.SetStatusCode(HttpStatusCode::k404NotFound);
-        return;
-      }
+    if (!net::RemovePrefix(rel_path, url, url_prefix_) &&
+        !net::RemovePrefix(rel_path, url + '/', url_prefix_)) {
+      reply.SetStatusCode(HttpStatusCode::k404NotFound);
+      return;
     }
     auto file_path = base_dir_ / rel_path;  // 拼接出在文件系统中的路径
     if (!fs::exists(file_path)) {

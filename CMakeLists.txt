@@ -26,6 +26,7 @@ target_sources(net
             "${NET_INC_DIR}/net/inet_address.hpp"
             "${NET_INC_DIR}/net/socket.hpp"
             "${NET_INC_DIR}/net/containers/mpmc_queue.hpp"
+            "${NET_INC_DIR}/net/util/string.hpp"
             "${NET_INC_DIR}/net/util/chrono.hpp"
             "${NET_INC_DIR}/net/util/filesystem.hpp"
             "${NET_INC_DIR}/net/util/object_pool.hpp"
