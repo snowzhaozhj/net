@@ -77,6 +77,6 @@ add_executable(net_test
 target_include_directories(net_test
         PRIVATE
             "${NET_TEST_DIR}")
-target_link_libraries(net_test net gtest)
+target_link_libraries(net_test net gtest gmock)
 
 add_subdirectory(${NET_EXAMPLE_DIR})
