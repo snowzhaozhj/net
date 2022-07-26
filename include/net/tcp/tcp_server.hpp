@@ -44,6 +44,31 @@ class TcpServer : noncopyable {
     sub_reactor_pool_.Start();
   }
 
+  void RunAt(TimePoint tp, TimerQueue::Task &&task) {
+    main_reactor_->SubmitTask([this, task = std::move(task), tp]() mutable {
+      auto sub_reactor = sub_reactor_pool_.GetNextReactor();
+      sub_reactor->SubmitTask([sub_reactor, task = std::move(task), tp]() mutable {
+        sub_reactor->AddTimerAt(tp, std::move(task));
+      });
+    });
+  }
+  void RunAfter(Duration dur, TimerQueue::Task &&task) {
+    main_reactor_->SubmitTask([this, task = std::move(task), dur]() mutable {
+      auto sub_reactor = sub_reactor_pool_.GetNextReactor();
+      sub_reactor->SubmitTask([sub_reactor, task = std::move(task), dur]() mutable {
+        sub_reactor->AddTimerAfter(dur, std::move(task));
+      });
+    });
+  }
+  void RunEvery(Duration dur, TimerQueue::Task &&task) {
+    main_reactor_->SubmitTask([this, task = std::move(task), dur]() mutable {
+      auto sub_reactor = sub_reactor_pool_.GetNextReactor();
+      sub_reactor->SubmitTask([sub_reactor, task = std::move(task), dur]() mutable {
+        sub_reactor->AddTimerEvery(dur, std::move(task));
+      });
+    });
+  }
+
  private:
   void NewConnectionCallback(int conn_fd, const InetAddress &peer_addr) {
     InetAddress local_addr(GetLocalAddr(conn_fd));

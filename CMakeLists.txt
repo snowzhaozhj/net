@@ -25,8 +25,10 @@ target_sources(net
             "${NET_INC_DIR}/net/buffer.hpp"
             "${NET_INC_DIR}/net/inet_address.hpp"
             "${NET_INC_DIR}/net/socket.hpp"
+            "${NET_INC_DIR}/net/concepts/range.hpp"
             "${NET_INC_DIR}/net/containers/mpmc_queue.hpp"
             "${NET_INC_DIR}/net/util/string.hpp"
+            "${NET_INC_DIR}/net/util/coding.hpp"
             "${NET_INC_DIR}/net/util/chrono.hpp"
             "${NET_INC_DIR}/net/util/filesystem.hpp"
             "${NET_INC_DIR}/net/util/object_pool.hpp"
@@ -51,6 +53,10 @@ target_sources(net
             "${NET_INC_DIR}/net/http/http_file_server.hpp"
             "${NET_INC_DIR}/net/http/restful_handler.hpp"
             "${NET_INC_DIR}/net/http/http_server.hpp"
+            "${NET_INC_DIR}/net/rpc/serializer.hpp"
+            "${NET_INC_DIR}/net/rpc/rpc_client.hpp"
+            "${NET_INC_DIR}/net/rpc/rpc_server.hpp"
+            "${NET_INC_DIR}/net/rpc/rpc_service_registry.hpp"
         PRIVATE
             "${NET_SRC_DIR}/net.cpp"
         )
@@ -73,6 +79,7 @@ add_executable(net_test
         "${NET_TEST_DIR}/reactor/reactor_pool_test.cpp"
         "${NET_TEST_DIR}/http/http_request_test.cpp"
         "${NET_TEST_DIR}/http/http_parser_test.cpp"
+        "${NET_TEST_DIR}/rpc/serializer_test.cpp"
         )
 target_include_directories(net_test
         PRIVATE
