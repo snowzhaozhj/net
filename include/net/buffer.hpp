@@ -50,7 +50,12 @@ class Buffer : public noncopyable {
   }
 
   void HasWritten(size_t n) { write_pos_ += n; }
-  void HasRead(size_t n) { read_pos_ += n; }
+  void HasRead(size_t n) {
+    read_pos_ += n;
+    if (read_pos_ == write_pos_) {
+      Reset();
+    }
+  }
 
   void Resize(size_t n) { buffer_.resize(n); }
   void Reset() {
@@ -97,10 +102,8 @@ class Buffer : public noncopyable {
     NET_ASSERT(ptr <= GetWritePtr());
     return Retrive(ptr - GetReadPtr());
   }
-  /// @note 转换成字符串后，将会调用Reset函数重置Buffer
   std::string RetriveAll() {
     std::string s = RetriveTo(GetWritePtr());
-    Reset();
     return s;
   }
 

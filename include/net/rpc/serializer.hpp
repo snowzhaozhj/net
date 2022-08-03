@@ -18,6 +18,9 @@ namespace net {
 class Serializer {
  public:
   Serializer() : buffer_(std::make_shared<net::Buffer>(64)) {}
+  explicit Serializer(BufferPtr buffer) : buffer_(std::move(buffer)) {}
+
+  BufferPtr GetBuffer() const { return buffer_; }
 
   /* Write functions */
 
@@ -31,6 +34,11 @@ class Serializer {
     buffer_->EnsureWritableBytes(sizeof(T));
     Encode(buffer_->GetWritePtr(), data);
     buffer_->HasWritten(sizeof(T));
+  }
+
+  template<typename T, std::enable_if_t<std::is_enum_v<T>, int> = 0>
+  void Write(T data) {
+    Write(static_cast<std::underlying_type_t<T>>(data));
   }
 
   void Write(float data) {
@@ -70,6 +78,14 @@ class Serializer {
     NET_ASSERT(buffer_->ReadableBytes() >= sizeof(T));
     Decode(buffer_->GetReadPtr(), data);
     buffer_->HasRead(sizeof(T));
+  }
+
+  template<typename T, std::enable_if_t<std::is_enum_v<T>, int> = 0>
+  void Read(T &data) {
+    using UT = std::underlying_type_t<T>;
+    UT ut;
+    Read(ut);
+    data = static_cast<T>(ut);
   }
 
   void Read(float &data) {
@@ -116,6 +132,25 @@ T Get(Serializer &serializer) {
   return t;
 }
 
+/* Serialize for BufferPtr */
+inline Serializer &operator<<(Serializer &serializer, const BufferPtr &buffer) {
+  NET_ASSERT(buffer != nullptr);
+  serializer << buffer->ReadableBytes();
+  serializer.WriteRaw(buffer->GetReadPtr(), buffer->ReadableBytes());
+  return serializer;
+}
+
+inline Serializer &operator>>(Serializer &serializer, BufferPtr &buffer) {
+  size_t len;
+  serializer >> len;
+  BufferPtr buf = std::make_shared<Buffer>(len);
+  NET_ASSERT(buf->WritableBytes() == len);
+  serializer.ReadRaw(buf->GetWritePtr(), len);
+  buf->HasWritten(len);
+  buffer = buf;
+  return serializer;
+}
+
 /* Serialize for std::pair */
 template<typename T1, typename T2>
 Serializer &operator<<(Serializer &serializer, const std::pair<T1, T2> &p) {
@@ -135,7 +170,7 @@ Serializer &operator>>(Serializer &serializer, std::pair<T1, T2> &p) {
 template<typename ...Ts>
 Serializer &operator<<(Serializer &serializer, const std::tuple<Ts...> &t) {
   std::apply([&serializer](Ts const &... args) {
-    (serializer << ... << args);
+    (void)(serializer << ... << args);
   }, t);
   return serializer;
 }
@@ -143,7 +178,7 @@ Serializer &operator<<(Serializer &serializer, const std::tuple<Ts...> &t) {
 template<typename ...Ts>
 Serializer &operator>>(Serializer &serializer, std::tuple<Ts...> &t) {
   std::apply([&serializer](Ts &... args) {
-    (serializer >> ... >> args);
+    (void)(serializer >> ... >> args);
   }, t);
   return serializer;
 }
@@ -349,5 +384,7 @@ Serializer &operator>>(Serializer &serializer, std::unordered_multimap<Key, Valu
 }
 
 } // namespace net
+
+#include "net/rpc/serialize_macro.hpp"
 
 #endif // NET_INCLUDE_NET_RPC_SERIALIZER_HPP_

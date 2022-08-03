@@ -53,6 +53,17 @@ class TcpClient {
     stopped_ = true;
     connector_.Stop();
   }
+
+  [[nodiscard]] bool Connecting() const {
+    return !stopped_;
+  }
+  [[nodiscard]] bool Connected() const {
+    return connector_.Connected();
+  }
+  [[nodiscard]] const TcpConnectionPtr &GetConnection() const {
+    return connection_;
+  }
+
  private:
   void NewConnectionCallback(int conn_fd) {
     connection_ = std::make_shared<TcpConnection>();

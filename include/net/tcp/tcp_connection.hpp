@@ -2,6 +2,7 @@
 #define NET_INCLUDE_NET_TCP_TCP_CONNECTION_HPP_
 
 #include "net/reactor/reactor.hpp"
+#include "net/util/context.hpp"
 
 namespace net {
 
@@ -25,8 +26,8 @@ class TcpConnection : noncopyable, public std::enable_shared_from_this<TcpConnec
 
   /// 每次获取一个TcpConnection对象后，使用Init函数进行初始化
   void Init(Reactor *reactor, int conn_fd) {
-    InetAddress local_addr(GetLocalAddr(conn_fd));
-    InetAddress peer_addr(GetPeerAddr(conn_fd));
+    InetAddress local_addr(net::GetLocalAddr(conn_fd));
+    InetAddress peer_addr(net::GetPeerAddr(conn_fd));
     Init(reactor, conn_fd, local_addr, peer_addr);
   }
 
@@ -39,6 +40,7 @@ class TcpConnection : noncopyable, public std::enable_shared_from_this<TcpConnec
     input_buffer_->Reset();
     output_buffer_->Reset();
     state_.store(State::Connecting, std::memory_order_relaxed);
+    context_.Clear();
 
     channel_.SetReadCallback([this] { HandleRead(); });
     channel_.SetWriteCallback([this] { HandleWrite(); });
@@ -92,8 +94,21 @@ class TcpConnection : noncopyable, public std::enable_shared_from_this<TcpConnec
       connection_callback_(shared_from_this());
     }
     reactor_->RemoveChannel(&channel_);
+    net::Close(channel_.GetFd());
   }
 
+  /// 向对端发送数据
+  /// @note 线程安全
+  void Send(const BufferPtr &buffer) {
+    if (state_.load(std::memory_order_acquire) != State::Connected) return;
+    if (reactor_->InCurrentReactorThread()) {
+      RealSend(buffer->GetReadPtr(), buffer->ReadableBytes());
+    } else {
+      reactor_->SubmitTask([buffer, this]() {
+        RealSend(buffer->GetReadPtr(), buffer->ReadableBytes());
+      });
+    }
+  }
   /// 向对端发送数据
   /// @note 线程安全
   void Send(std::string_view content) {
@@ -127,6 +142,9 @@ class TcpConnection : noncopyable, public std::enable_shared_from_this<TcpConnec
   }
 
   Reactor *GetReactor() const { return reactor_; }
+  Context &GetContext() { return context_; }
+  InetAddress &GetLocalAddr() { return local_addr_; }
+  InetAddress &GetPeerAddr() { return peer_addr_; }
 
  private:
   void HandleRead() {
@@ -161,6 +179,7 @@ class TcpConnection : noncopyable, public std::enable_shared_from_this<TcpConnec
     }
   }
   void HandleClose() {
+    LOG_INFO("HandleClose");
     channel_.DisableAll();
     reactor_->RemoveChannel(&channel_);
     close_callback_(shared_from_this());
@@ -220,6 +239,8 @@ class TcpConnection : noncopyable, public std::enable_shared_from_this<TcpConnec
   CloseCallback close_callback_;
 
   std::atomic<State> state_;
+
+  Context context_;
 };
 
 using TcpConnectionPtr = TcpConnection::TcpConnectionPtr;

@@ -25,7 +25,6 @@ target_sources(net
             "${NET_INC_DIR}/net/buffer.hpp"
             "${NET_INC_DIR}/net/inet_address.hpp"
             "${NET_INC_DIR}/net/socket.hpp"
-            "${NET_INC_DIR}/net/concepts/range.hpp"
             "${NET_INC_DIR}/net/containers/mpmc_queue.hpp"
             "${NET_INC_DIR}/net/util/string.hpp"
             "${NET_INC_DIR}/net/util/coding.hpp"
@@ -33,6 +32,8 @@ target_sources(net
             "${NET_INC_DIR}/net/util/filesystem.hpp"
             "${NET_INC_DIR}/net/util/object_pool.hpp"
             "${NET_INC_DIR}/net/util/thread_pool.hpp"
+            "${NET_INC_DIR}/net/util/traits.hpp"
+            "${NET_INC_DIR}/net/util/context.hpp"
             "${NET_INC_DIR}/net/reactor/channel.hpp"
             "${NET_INC_DIR}/net/reactor/waker.hpp"
             "${NET_INC_DIR}/net/reactor/timer_queue.hpp"
@@ -54,9 +55,16 @@ target_sources(net
             "${NET_INC_DIR}/net/http/restful_handler.hpp"
             "${NET_INC_DIR}/net/http/http_server.hpp"
             "${NET_INC_DIR}/net/rpc/serializer.hpp"
+            "${NET_INC_DIR}/net/rpc/load_balance.hpp"
+            "${NET_INC_DIR}/net/rpc/rpc_protocol.hpp"
+            "${NET_INC_DIR}/net/rpc/rpc_message_builder.hpp"
+            "${NET_INC_DIR}/net/rpc/rpc_router.hpp"
+            "${NET_INC_DIR}/net/rpc/rpc_publisher.hpp"
+            "${NET_INC_DIR}/net/rpc/rpc_service_manager.hpp"
+            "${NET_INC_DIR}/net/rpc/rpc_connection.hpp"
             "${NET_INC_DIR}/net/rpc/rpc_client.hpp"
             "${NET_INC_DIR}/net/rpc/rpc_server.hpp"
-            "${NET_INC_DIR}/net/rpc/rpc_service_registry.hpp"
+            "${NET_INC_DIR}/net/rpc/rpc_registry.hpp"
         PRIVATE
             "${NET_SRC_DIR}/net.cpp"
         )
@@ -80,6 +88,7 @@ add_executable(net_test
         "${NET_TEST_DIR}/http/http_request_test.cpp"
         "${NET_TEST_DIR}/http/http_parser_test.cpp"
         "${NET_TEST_DIR}/rpc/serializer_test.cpp"
+        "${NET_TEST_DIR}/rpc/rpc_router_test.cpp"
         )
 target_include_directories(net_test
         PRIVATE

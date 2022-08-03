@@ -12,6 +12,14 @@ namespace net {
 
 /// IPv4地址
 class InetAddress {
+  static std::string ExtractIP(std::string_view ip_port) {
+    auto pos = ip_port.find(':');
+    return std::string(ip_port.data(), pos);
+  }
+  static uint16_t ExtractPort(std::string_view ip_port) {
+    auto pos = ip_port.find(':');
+    return std::atoi(ip_port.data() + pos + 1);
+  }
  public:
   explicit InetAddress(uint16_t port) {
     bzero(&addr_, sizeof(addr_));
@@ -27,6 +35,11 @@ class InetAddress {
     }
     addr_.sin_port = htons(port);
   }
+
+  explicit InetAddress(std::string_view ip_port)
+      : InetAddress(ExtractIP(ip_port), ExtractPort(ip_port)) {
+  }
+
   explicit InetAddress(const struct sockaddr_in &addr) : addr_(addr) {}
 
   [[nodiscard]] const sockaddr_in &GetAddr() const { return addr_; }

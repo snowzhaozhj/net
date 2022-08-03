@@ -58,6 +58,10 @@ class Connector : noncopyable {
     RealStart();
   }
 
+  [[nodiscard]] bool Connected() const {
+    return state_ == State::Connected;
+  }
+
  private:
   /// 开始进行连接
   /// @note 非线程安全

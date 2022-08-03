@@ -32,6 +32,23 @@ TEST_F(SerializerTest, Base) {
   EXPECT_EQ(Get<char>(s), 'a');
 }
 
+TEST_F(SerializerTest, Enum) {
+  enum EA {
+    EA_0 = 0
+  };
+  EA a = EA_0;
+  s << a;
+  EXPECT_EQ(Get<EA>(s), EA_0);
+
+  enum class EB : uint8_t  {
+    EB_0 = 0,
+    EB_1 = 1,
+  };
+  EB b = EB::EB_1;
+  s << b;
+  EXPECT_EQ(Get<EB>(s), EB::EB_1);
+}
+
 TEST_F(SerializerTest, Float) {
   float a1 = 12.15894;
   float a2 = 14123.2341;
@@ -59,6 +76,14 @@ TEST_F(SerializerTest, String) {
   EXPECT_EQ(rstr1, "Hello");
   auto rstr2 = Get<std::string>(s);
   EXPECT_EQ(rstr2, ", world");
+}
+
+TEST_F(SerializerTest, Buffer) {
+  BufferPtr buf = std::make_shared<Buffer>();
+  buf->Append("Hello, world");
+  s << buf;
+  auto rbuf = Get<BufferPtr>(s);
+  EXPECT_EQ(rbuf->RetriveAll(), "Hello, world");
 }
 
 TEST_F(SerializerTest, Pair) {
@@ -209,6 +234,38 @@ TEST_F(SerializerTest, Map) {
   TestMap<std::unordered_map>(s);
   TestMultiMap<std::multimap>(s);
   TestMultiMap<std::unordered_multimap>(s);
+}
+
+struct Dummy1 {
+  int i;
+  std::string s;
+};
+SERIALIZE2(Dummy1, i, s);
+
+struct Dummy2 {
+  Dummy1 dummy_1;
+  char c;
+};
+SERIALIZE2(Dummy2, dummy_1, c);
+
+TEST_F(SerializerTest, Struct) {
+  Dummy1 d1;
+  d1.i = 3;
+  d1.s = "Hello";
+  s << d1;
+  auto rd1 = Get<Dummy1>(s);
+  EXPECT_EQ(rd1.i, 3);
+  EXPECT_EQ(rd1.s, "Hello");
+
+  Dummy2 d2;
+  d2.dummy_1.i = 5;
+  d2.dummy_1.s = "world";
+  d2.c = 'c';
+  s << d2;
+  auto rd2 = Get<Dummy2>(s);
+  EXPECT_EQ(d2.c, 'c');
+  EXPECT_EQ(d2.dummy_1.i, 5);
+  EXPECT_EQ(d2.dummy_1.s, "world");
 }
 
 }

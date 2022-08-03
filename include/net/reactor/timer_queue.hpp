@@ -78,7 +78,7 @@ class TimerQueue {
     auto timer = new Timer(std::move(task), expiration, interval, ++id_);
     bool earliest_changed = Insert(timer);
     if (earliest_changed) {
-      detail::SetTimerFd(channel_.GetFd(), expiration);
+      detail::SetTimerFd(channel_.GetFd(), expiration + interval);
     }
     return timer->timer_id;
   }

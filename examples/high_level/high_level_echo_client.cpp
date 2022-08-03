@@ -3,11 +3,20 @@
 
 void ConnectionCallback(const net::TcpConnectionPtr &conn) {
   if (conn->Connected()) {
-    std::string line;
-    while (std::getline(std::cin, line)) {
-      conn->Send(line);
-    }
+    LOG_INFO("connected");
+    conn->Send("Hello");
+    conn->Shutdown();
+//    std::string line;
+//    while (std::getline(std::cin, line)) {
+//      conn->Send(line);
+//    }
+  } else {
+    LOG_INFO("disconnected");
   }
+}
+
+void MessageCallback(const net::TcpConnectionPtr &conn, const net::BufferPtr &buf) {
+  LOG_INFO("{}", buf->RetriveAll());
 }
 
 int main() {
